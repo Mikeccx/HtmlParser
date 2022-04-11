@@ -19,6 +19,7 @@ export default class HtmlParser {
         this.index += n
         this.template = this.template.substring(n)
     }
+    // 开始标签处理
     startTagHandle() {
         const start = this.template.match(startTag)
         if (start) {
@@ -63,6 +64,7 @@ export default class HtmlParser {
         const len = this.stack.length
         return this.stack[len - 1]
     }
+    // 结束标签处理
     endTagHandle() {
         const end = this.template.match(endTag)
         if (end) {
@@ -77,6 +79,7 @@ export default class HtmlParser {
         }
     }
     // 文字处理
+    // todo 兼容特殊符号，[</>]等
     textHandle(text) {
         const node = {
             text: text,
