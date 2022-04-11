@@ -1,7 +1,10 @@
 import HtmlParser from '../src/parse.js'
 const tem = `
     <div id="app" style="color: red;" v-if="show">
-        <span></span>
+        <input />
+        <span>
+            222
+        </span>
     </div>
 `
 

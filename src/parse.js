@@ -50,10 +50,13 @@ export default class HtmlParser {
                 this.root = match
                 this.curP = match
             } else {
+                this.curP = this.getTop()
                 match.parent = this.curP
                 this.curP.children.push(match)
             }
-            this.stack.push(match.tagName)
+            if (!end[1]) {
+                this.stack.push(match)
+            }
         }
     }
     getTop () {
@@ -65,7 +68,7 @@ export default class HtmlParser {
         if (end) {
             this.advance(end[0].length)
             // 闭合标签没有对应上
-            if (this.getTop() !== end[1]) {
+            if (this.getTop().tagName !== end[1]) {
                 console.log('存在没有闭合的标签对')
                 this.template = ''
             } else {
@@ -73,21 +76,43 @@ export default class HtmlParser {
             }
         }
     }
+    // 文字处理
+    textHandle(text) {
+        const node = {
+            text: text,
+            type: 3
+        }
+        if (!this.root) {
+            // 確定根節點
+            this.root = node
+            this.curP = node
+        } else {
+            this.curP = this.getTop()
+            node.parent = this.curP
+            this.curP.children.push(node)
+        }
+    }
     parse() {
-        const index = this.template.indexOf('<')
         while(this.template) {
-            if (endTag.test(this.template)) {
-                this.endTagHandle()
-            }
-            if (startTag.test(this.template)) {
-                this.startTagHandle()
+            const index = this.template.indexOf('<')
+            if (index === 0) {
+                if (endTag.test(this.template)) {
+                    this.endTagHandle()
+                }
+                if (startTag.test(this.template)) {
+                    this.startTagHandle()
+                }
+            } else {
+                const text = this.template.slice(0, index)
+                if (text) {
+                    this.textHandle(text)
+                    this.advance(index)
+                }
             }
             // 处理文字todo
-
             this.template = this.template.trim()
         }
-        console.log('this.root:', this.root)
-        console.log('this.template:', this.stack)
+        console.log('res:', this.root)
         return this.root
     }
 }
